@@ -1,0 +1,235 @@
+<Window x:Class="MdConverter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Terminal → Markdown Converter"
+        Width="1280" Height="800"
+        MinWidth="700" MinHeight="500"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI"
+        Loaded="Window_Loaded"
+        KeyDown="Window_KeyDown">
+
+    <Window.Resources>
+
+        <!-- ── Primary action button (colored, larger) ── -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Compact icon+text button (toolbar) ── -->
+        <Style x:Key="ToolbarButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- ── Panel visibility toggle chip ── -->
+        <Style x:Key="PanelToggle" TargetType="ToggleButton">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Root" Background="#4A4A5A" CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#6B46C1"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Toolbar vertical separator ── -->
+        <Style x:Key="ToolbarSep" TargetType="Separator">
+            <Setter Property="Background" Value="#55FFFFFF"/>
+            <Setter Property="Width" Value="1"/>
+            <Setter Property="Margin" Value="6,8"/>
+        </Style>
+
+        <!-- ── Document tab item ── -->
+        <Style x:Key="DocTabItem" TargetType="TabItem">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5,5,0,0"
+                                Margin="0,0,3,0"
+                                Padding="8,5">
+                            <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="White"/>
+                                <Setter TargetName="Root" Property="BorderThickness" Value="0,2,0,0"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#0078D4"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#EFEFEF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Document tab control ── -->
+        <Style x:Key="DocTabControl" TargetType="TabControl">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Background="#F2F2F2" Padding="4,4,4,0">
+                                <TabPanel IsItemsHost="True"/>
+                            </Border>
+                            <Border Grid.Row="1"
+                                    Background="White"
+                                    BorderBrush="#D0D0D0"
+                                    BorderThickness="1,0,1,1">
+                                <ContentPresenter ContentSource="SelectedContent"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ── Unified dark toolbar ── -->
+        <Border Grid.Row="0" Background="#1E1E2E">
+            <DockPanel Margin="12,0">
+                <!-- Brand -->
+
+                <Separator DockPanel.Dock="Left" Style="{StaticResource ToolbarSep}"/>
+
+                <!-- Left action buttons -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="OpenButton"
+                            Content="⊕  Open"
+                            Style="{StaticResource ToolbarButton}"
+                            Background="#3A3A52" Margin="0,0,4,0"
+                            Click="OpenButton_Click"
+                            ToolTip="Open a saved .md file  (Ctrl+O)"/>
+                    <Button x:Name="NewTabButton"
+                            Content="＋  New"
+                            Style="{StaticResource ToolbarButton}"
+                            Background="#3A3A52" Margin="0,0,4,0"
+                            Click="NewTabButton_Click"
+                            ToolTip="New tab  (Ctrl+T)"/>
+                    <Button x:Name="ClearButton"
+                            Content="✕  Clear"
+                            Style="{StaticResource ToolbarButton}"
+                            Background="#3A3A52"
+                            Click="ClearButton_Click"
+                            ToolTip="Clear active tab content"/>
+                </StackPanel>
+
+                <Separator DockPanel.Dock="Left" Style="{StaticResource ToolbarSep}"/>
+
+                <!-- Right-docked copy/save and toggles -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ToggleButton x:Name="ToggleSource"   Content="Source"   IsChecked="True"
+                                  Style="{StaticResource PanelToggle}" Margin="0,0,4,0"
+                                  Click="TogglePanel_Click" ToolTip="Show / hide the Source panel"/>
+                    <ToggleButton x:Name="ToggleMd"       Content="Markdown" IsChecked="True"
+                                  Style="{StaticResource PanelToggle}" Margin="0,0,4,0"
+                                  Click="TogglePanel_Click" ToolTip="Show / hide the Markdown panel"/>
+                    <ToggleButton x:Name="TogglePreview"  Content="Preview"  IsChecked="False"
+                                  Style="{StaticResource PanelToggle}" Margin="0,0,12,0"
+                                  Click="TogglePanel_Click" ToolTip="Show / hide the Preview panel"/>
+
+                    <Separator Style="{StaticResource ToolbarSep}" Margin="0,8,10,8"/>
+
+                    <Button x:Name="CopyButton"
+                            Content="Copy"
+                            Style="{StaticResource ToolbarButton}"
+                            Background="#0078D4" Margin="0,0,4,0"
+                            Click="CopyButton_Click"/>
+                    <Button x:Name="SaveButton"
+                            Content="Save .md"
+                            Style="{StaticResource ToolbarButton}"
+                            Background="#107C41"
+                            Click="SaveButton_Click"/>
+                </StackPanel>
+
+                <!-- Spacer -->
+                <Grid/>
+            </DockPanel>
+        </Border>
+
+        <!-- ── Document tabs (content built in code-behind) ── -->
+        <TabControl x:Name="DocumentTabs" Grid.Row="1"
+                    Style="{StaticResource DocTabControl}"
+                    SelectionChanged="DocumentTabs_SelectionChanged"/>
+
+        <!-- ── Status bar ── -->
+        <Border Grid.Row="2" Margin="0"
+                Background="#EBEBEB" Padding="10,5">
+            <DockPanel>
+                <TextBlock x:Name="StatusText"
+                           Text="Ready — paste terminal text on the left"
+                           FontSize="12" Foreground="#666" VerticalAlignment="Center"/>
+                <TextBlock x:Name="StatsText"
+                           HorizontalAlignment="Right"
+                           FontSize="12" Foreground="#888" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
