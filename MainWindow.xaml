@@ -102,17 +102,21 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource TabSelectedBackground}"/>
                                 <Setter TargetName="Root" Property="BorderThickness" Value="0,2,0,0"/>
                                 <Setter TargetName="Root" Property="BorderBrush" Value="#0078D4"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource TabHoverBackground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource TabSelectedBackground}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource TabHoverBackground}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!-- ── Document tab control ── -->
