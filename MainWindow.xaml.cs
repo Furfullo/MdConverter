@@ -34,6 +34,7 @@ public partial class MainWindow : Window
         public required TextBlock SourceLabel      { get; init; }
         public required TextBlock MdLabel          { get; init; }
         public required TextBlock PreviewLabel     { get; init; }
+        public required Button   CloseBtn         { get; init; }
     }
 
     private readonly Dictionary<TabItem, TabState> _tabStates = new();
@@ -302,27 +303,6 @@ public partial class MainWindow : Window
             Visibility        = Visibility.Collapsed
         };
 
-        // ── Build TabState ───────────────────────────────────────────────────
-
-        var state = new TabState
-        {
-            InputBox         = inputBox,
-            OutputBox        = outputBox,
-            PreviewWebView   = previewWebView,
-            SourceCol        = sourceCol,
-            SplitterCol1     = splitterCol1,
-            MdCol            = mdCol,
-            SplitterCol2     = splitterCol2,
-            PreviewCol       = previewCol,
-            Splitter1        = splitter1,
-            Splitter2        = splitter2,
-            HeaderNameLabel  = nameLabel,
-            HeaderNameEditor = nameEditor,
-            SourceLabel      = sourceLabel,
-            MdLabel          = mdLabel,
-            PreviewLabel     = previewLabel,
-        };
-
         void BeginRename()
         {
             nameEditor.Text       = nameLabel.Text;
@@ -365,6 +345,28 @@ public partial class MainWindow : Window
             Cursor            = Cursors.Hand,
             Foreground        = new SolidColorBrush(Color.FromRgb(0x99, 0x99, 0x99)),
             ToolTip           = "Close tab  (Ctrl+W)"
+        };
+
+        // ── Build TabState ───────────────────────────────────────────────────
+
+        var state = new TabState
+        {
+            InputBox         = inputBox,
+            OutputBox        = outputBox,
+            PreviewWebView   = previewWebView,
+            SourceCol        = sourceCol,
+            SplitterCol1     = splitterCol1,
+            MdCol            = mdCol,
+            SplitterCol2     = splitterCol2,
+            PreviewCol       = previewCol,
+            Splitter1        = splitter1,
+            Splitter2        = splitter2,
+            HeaderNameLabel  = nameLabel,
+            HeaderNameEditor = nameEditor,
+            SourceLabel      = sourceLabel,
+            MdLabel          = mdLabel,
+            PreviewLabel     = previewLabel,
+            CloseBtn         = closeBtn,
         };
 
         var header = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
@@ -555,6 +557,7 @@ public partial class MainWindow : Window
         state.HeaderNameLabel.Foreground  = tabFg;
         state.HeaderNameEditor.Foreground = tabFg;
         state.HeaderNameEditor.Background = panelBg;
+        state.CloseBtn.Foreground         = tabFg;
     }
 
     private TabState? GetActiveTabState() =>
