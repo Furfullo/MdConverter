@@ -387,6 +387,47 @@ public partial class MainWindow : Window
             RefreshPreview();
         };
 
+        // ── Right-click context menu ─────────────────────────────────────────────
+
+        var contextMenu = new ContextMenu();
+
+        contextMenu.Opened += (_, _) =>
+        {
+            contextMenu.Items.Clear();
+
+            int docCount = DocumentTabs.Items.Cast<TabItem>().Count(t => t != _addTabItem);
+
+            if (_dockedTab == tab)
+            {
+                // This tab is currently docked — offer unpin only
+                var unpin = new MenuItem { Header = "Unpin from left" };
+                unpin.Click += (_, _) => UndockTab();
+                contextMenu.Items.Add(unpin);
+            }
+            else
+            {
+                // Offer to dock this tab
+                var dock = new MenuItem
+                {
+                    Header    = "📌  Dock to left",
+                    IsEnabled = docCount > 1
+                };
+                dock.Click += (_, _) => DockTab(tab);
+                contextMenu.Items.Add(dock);
+
+                // If another tab is currently docked, also offer to unpin it
+                if (_dockedTab is not null)
+                {
+                    var otherName = GetTabHeaderLabel(_dockedTab)?.Text?.Replace("📌 ", "") ?? "tab";
+                    var unpin     = new MenuItem { Header = $"Unpin \"{otherName}\" from left" };
+                    unpin.Click  += (_, _) => UndockTab();
+                    contextMenu.Items.Add(unpin);
+                }
+            }
+        };
+
+        header.ContextMenu = contextMenu;
+
         return tab;
     }
 
