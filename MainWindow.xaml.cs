@@ -42,6 +42,7 @@ public partial class MainWindow : Window
     private bool     _suppressOutputSync = false;
     private TabItem? _addTabItem;
     private TabItem? _dockedTab;
+    private const string PinPrefix = "📌 ";
 
     // Comparison-grid column accessors (indices match CompareGrid.ColumnDefinitions order)
     private ColumnDefinition LeftPaneCol    => CompareGrid.ColumnDefinitions[0];
@@ -418,7 +419,7 @@ public partial class MainWindow : Window
                 // If another tab is currently docked, also offer to unpin it
                 if (_dockedTab is not null)
                 {
-                    var otherName = GetTabHeaderLabel(_dockedTab)?.Text?.Replace("📌 ", "") ?? "tab";
+                    var otherName = GetTabHeaderLabel(_dockedTab)?.Text?.Replace(PinPrefix, "") ?? "tab";
                     var unpin     = new MenuItem { Header = $"Unpin \"{otherName}\" from left" };
                     unpin.Click  += (_, _) => UndockTab();
                     contextMenu.Items.Add(unpin);
@@ -470,7 +471,15 @@ public partial class MainWindow : Window
     private void CloseTab(TabItem tab)
     {
         int docCount = DocumentTabs.Items.Cast<TabItem>().Count(t => t != _addTabItem);
-        if (docCount <= 1) return; // always keep at least one
+        if (docCount <= 1) return; // always keep at least one tab total
+
+        // When a tab is docked, ensure at least one non-docked tab remains in the right pane
+        if (tab != _dockedTab)
+        {
+            int rightPaneCount = DocumentTabs.Items.Cast<TabItem>()
+                .Count(t => t != _addTabItem && t != _dockedTab);
+            if (rightPaneCount <= 1) return;
+        }
 
         // Undock first if this tab is pinned to the left pane
         if (tab == _dockedTab)
@@ -535,10 +544,15 @@ public partial class MainWindow : Window
             if (contentGrid is not null)
                 _dockedTab.Content = contentGrid;
         }
+        else
+        {
+            // Defensive: clear whatever ended up in the left pane
+            CompareLeftPane.Child = null;
+        }
 
         // Remove pin prefix from header
-        if (GetTabHeaderLabel(_dockedTab) is TextBlock lbl && lbl.Text.StartsWith("📌 "))
-            lbl.Text = lbl.Text[3..];
+        if (GetTabHeaderLabel(_dockedTab) is TextBlock lbl && lbl.Text.StartsWith(PinPrefix))
+            lbl.Text = lbl.Text[PinPrefix.Length..];
 
         // Hide left pane and splitter
         LeftPaneCol.Width    = new GridLength(0);
@@ -559,7 +573,7 @@ public partial class MainWindow : Window
         {
             tab.Content = null;
 
-            var tabName = GetTabHeaderLabel(tab)?.Text?.Replace("📌 ", "") ?? "Tab";
+            var tabName = GetTabHeaderLabel(tab)?.Text?.Replace(PinPrefix, "") ?? "Tab";
             var strip = new Border
             {
                 Background = new SolidColorBrush(Color.FromRgb(0x6B, 0x46, 0xC1)),
@@ -582,8 +596,8 @@ public partial class MainWindow : Window
         }
 
         // Add pin prefix to header
-        if (GetTabHeaderLabel(tab) is TextBlock lbl && !lbl.Text.StartsWith("📌 "))
-            lbl.Text = "📌 " + lbl.Text;
+        if (GetTabHeaderLabel(tab) is TextBlock lbl && !lbl.Text.StartsWith(PinPrefix))
+            lbl.Text = PinPrefix + lbl.Text;
 
         // Show left pane and splitter (equal split initially)
         LeftPaneCol.Width    = new GridLength(1, GridUnitType.Star);
