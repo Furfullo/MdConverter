@@ -219,6 +219,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0" MinWidth="0"/>
                 <ColumnDefinition Width="0"/>
+                <!-- splitter right gutter -->
                 <ColumnDefinition Width="0"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -228,14 +229,14 @@
                     Grid.Column="0"
                     ClipToBounds="True"
                     BorderBrush="#D0D0D0"
-                    BorderThickness="0,0,0,1"/>
+                    BorderThickness="0,0,1,0"/>
 
             <!-- Drag handle between panes -->
             <GridSplitter x:Name="CompareSplitter"
                           Grid.Column="1"
                           Grid.ColumnSpan="2"
                           Width="5"
-                          HorizontalAlignment="Stretch"
+                          HorizontalAlignment="Left"
                           Background="#DDDDDD"
                           Cursor="SizeWE"
                           Visibility="Collapsed"/>
