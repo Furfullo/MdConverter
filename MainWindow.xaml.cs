@@ -523,7 +523,7 @@ public partial class MainWindow : Window
     // Active-tab helpers
     // -------------------------------------------------------------------------
 
-    private static void ApplyThemeToTab(TabState state)
+    private void ApplyThemeToTab(TabState state)
     {
         var panelBg    = (SolidColorBrush)Application.Current.Resources["PanelBackground"];
         var panelAlt   = (SolidColorBrush)Application.Current.Resources["PanelAltBackground"];
