@@ -81,6 +81,9 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        ThemeManager.Load();
+        ThemeManager.Apply(ThemeManager.Current);
+        UpdateThemeButton();
         InitializeTabs();
     }
 
@@ -443,6 +446,8 @@ public partial class MainWindow : Window
 
         header.ContextMenu = contextMenu;
 
+        ApplyThemeToTab(state);
+
         return tab;
     }
 
@@ -517,6 +522,40 @@ public partial class MainWindow : Window
     // -------------------------------------------------------------------------
     // Active-tab helpers
     // -------------------------------------------------------------------------
+
+    private static void ApplyThemeToTab(TabState state)
+    {
+        var panelBg    = (SolidColorBrush)Application.Current.Resources["PanelBackground"];
+        var panelAlt   = (SolidColorBrush)Application.Current.Resources["PanelAltBackground"];
+        var headerBg   = (SolidColorBrush)Application.Current.Resources["PanelHeaderBackground"];
+        var headerFg   = (SolidColorBrush)Application.Current.Resources["PanelHeaderForeground"];
+        var textFg     = (SolidColorBrush)Application.Current.Resources["TextForeground"];
+        var tabFg      = (SolidColorBrush)Application.Current.Resources["TabHeaderForeground"];
+        var splitterBg = (SolidColorBrush)Application.Current.Resources["SplitterBackground"];
+
+        // Text editors
+        state.InputBox.Background  = panelBg;
+        state.InputBox.Foreground  = textFg;
+        state.OutputBox.Background = panelAlt;
+        state.OutputBox.Foreground = textFg;
+
+        // Splitters
+        state.Splitter1.Background = splitterBg;
+        state.Splitter2.Background = splitterBg;
+
+        // Panel header labels
+        state.SourceLabel.Background  = headerBg;
+        state.SourceLabel.Foreground  = headerFg;
+        state.MdLabel.Background      = headerBg;
+        state.MdLabel.Foreground      = headerFg;
+        state.PreviewLabel.Background = headerBg;
+        state.PreviewLabel.Foreground = headerFg;
+
+        // Tab header name label and editor
+        state.HeaderNameLabel.Foreground  = tabFg;
+        state.HeaderNameEditor.Foreground = tabFg;
+        state.HeaderNameEditor.Background = panelBg;
+    }
 
     private TabState? GetActiveTabState() =>
         DocumentTabs.SelectedItem is TabItem ti && _tabStates.TryGetValue(ti, out var s) ? s : null;
@@ -847,5 +886,23 @@ public partial class MainWindow : Window
         timer.Start();
     }
 
-    private void ToggleTheme_Click(object sender, RoutedEventArgs e) { }
+    private void ToggleTheme_Click(object sender, RoutedEventArgs e)
+    {
+        string newTheme = ThemeManager.Current == "light" ? "dark" : "light";
+        ThemeManager.Apply(newTheme);
+        ThemeManager.Save();
+        UpdateThemeButton();
+
+        foreach (var state in _tabStates.Values)
+            ApplyThemeToTab(state);
+
+        RefreshPreview();
+    }
+
+    private void UpdateThemeButton()
+    {
+        ToggleTheme.Content   = ThemeManager.Current == "dark" ? "☀ Light" : "🌙 Dark";
+        ToggleTheme.IsChecked = ThemeManager.Current == "dark";
+        ToggleTheme.ToolTip   = ThemeManager.Current == "dark" ? "Switch to light mode" : "Switch to dark mode";
+    }
 }
