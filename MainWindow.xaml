@@ -4,7 +4,7 @@
         Title="Terminal → Markdown Converter"
         Width="1280" Height="800"
         MinWidth="700" MinHeight="500"
-        Background="#F5F5F5"
+        Background="{DynamicResource AppBackground}"
         FontFamily="Segoe UI"
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown">
@@ -87,7 +87,7 @@
 
         <!-- ── Document tab item ── -->
         <Style x:Key="DocTabItem" TargetType="TabItem">
-            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="{DynamicResource TabBackground}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="Template">
@@ -102,12 +102,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Root" Property="Background" Value="White"/>
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource TabSelectedBackground}"/>
                                 <Setter TargetName="Root" Property="BorderThickness" Value="0,2,0,0"/>
                                 <Setter TargetName="Root" Property="BorderBrush" Value="#0078D4"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Root" Property="Background" Value="#EFEFEF"/>
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource TabHoverBackground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -128,12 +128,12 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <Border Grid.Row="0" Background="#F2F2F2" Padding="4,4,4,0">
+                            <Border Grid.Row="0" Background="{DynamicResource TabBarBackground}" Padding="4,4,4,0">
                                 <TabPanel IsItemsHost="True"/>
                             </Border>
                             <Border Grid.Row="1"
-                                    Background="White"
-                                    BorderBrush="#D0D0D0"
+                                    Background="{DynamicResource PanelBackground}"
+                                    BorderBrush="{DynamicResource BorderColor}"
                                     BorderThickness="1,0,1,1">
                                 <ContentPresenter ContentSource="SelectedContent"/>
                             </Border>
@@ -195,6 +195,12 @@
                                   Style="{StaticResource PanelToggle}" Margin="0,0,12,0"
                                   Click="TogglePanel_Click" ToolTip="Show / hide the Preview panel"/>
 
+                    <ToggleButton x:Name="ToggleTheme"
+                              Content="🌙 Dark"
+                              Style="{StaticResource PanelToggle}"
+                              Margin="0,0,4,0"
+                              Click="ToggleTheme_Click"
+                              ToolTip="Switch to dark mode"/>
                     <Separator Style="{StaticResource ToolbarSep}" Margin="0,8,10,8"/>
 
                     <Button x:Name="CopyButton"
@@ -249,14 +255,14 @@
 
         <!-- ── Status bar ── -->
         <Border Grid.Row="2" Margin="0"
-                Background="#EBEBEB" Padding="10,5">
+                Background="{DynamicResource StatusBarBackground}" Padding="10,5">
             <DockPanel>
                 <TextBlock x:Name="StatusText"
                            Text="Ready — paste terminal text on the left"
-                           FontSize="12" Foreground="#666" VerticalAlignment="Center"/>
+                           FontSize="12" Foreground="{DynamicResource StatusBarForeground}" VerticalAlignment="Center"/>
                 <TextBlock x:Name="StatsText"
                            HorizontalAlignment="Right"
-                           FontSize="12" Foreground="#888" VerticalAlignment="Center"/>
+                           FontSize="12" Foreground="{DynamicResource StatusBarForeground}" VerticalAlignment="Center"/>
             </DockPanel>
         </Border>
     </Grid>

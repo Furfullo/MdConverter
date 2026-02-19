@@ -832,4 +832,6 @@ public partial class MainWindow : Window
         timer.Tick += (_, _) => { CopyButton.Content = "Copy"; timer.Stop(); };
         timer.Start();
     }
+
+    private void ToggleTheme_Click(object sender, RoutedEventArgs e) { }
 }
