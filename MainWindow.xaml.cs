@@ -29,6 +29,11 @@ public partial class MainWindow : Window
         public required GridSplitter      Splitter2      { get; init; }
         public          bool              WebViewReady   { get; set; }
         public          bool              IsViewMode     { get; set; }
+        public required TextBlock HeaderNameLabel  { get; init; }
+        public required TextBox   HeaderNameEditor { get; init; }
+        public required TextBlock SourceLabel      { get; init; }
+        public required TextBlock MdLabel          { get; init; }
+        public required TextBlock PreviewLabel     { get; init; }
     }
 
     private readonly Dictionary<TabItem, TabState> _tabStates = new();
@@ -254,27 +259,15 @@ public partial class MainWindow : Window
         contentGrid.ColumnDefinitions.Add(splitterCol2);
         contentGrid.ColumnDefinitions.Add(previewCol);
 
-        contentGrid.Children.Add(WrapInPanel(inputBox,       "SOURCE",   0));
+        var (sourcePanel,  sourceLabel)  = WrapInPanel(inputBox,       "SOURCE",   0);
+        var (mdPanel,      mdLabel)      = WrapInPanel(outputBox,      "MARKDOWN", 2);
+        var (previewPanel, previewLabel) = WrapInPanel(previewWebView, "PREVIEW",  4);
+
+        contentGrid.Children.Add(sourcePanel);
         contentGrid.Children.Add(splitter1);
-        contentGrid.Children.Add(WrapInPanel(outputBox,      "MARKDOWN", 2));
+        contentGrid.Children.Add(mdPanel);
         contentGrid.Children.Add(splitter2);
-        contentGrid.Children.Add(WrapInPanel(previewWebView, "PREVIEW",  4));
-
-        // ── Build TabState ───────────────────────────────────────────────────
-
-        var state = new TabState
-        {
-            InputBox      = inputBox,
-            OutputBox     = outputBox,
-            PreviewWebView = previewWebView,
-            SourceCol     = sourceCol,
-            SplitterCol1  = splitterCol1,
-            MdCol         = mdCol,
-            SplitterCol2  = splitterCol2,
-            PreviewCol    = previewCol,
-            Splitter1     = splitter1,
-            Splitter2     = splitter2
-        };
+        contentGrid.Children.Add(previewPanel);
 
         // ── Tab header: rename TextBlock ↔ TextBox + close button ────────────
 
@@ -304,6 +297,27 @@ public partial class MainWindow : Window
             MaxWidth          = 160,
             VerticalAlignment = VerticalAlignment.Center,
             Visibility        = Visibility.Collapsed
+        };
+
+        // ── Build TabState ───────────────────────────────────────────────────
+
+        var state = new TabState
+        {
+            InputBox         = inputBox,
+            OutputBox        = outputBox,
+            PreviewWebView   = previewWebView,
+            SourceCol        = sourceCol,
+            SplitterCol1     = splitterCol1,
+            MdCol            = mdCol,
+            SplitterCol2     = splitterCol2,
+            PreviewCol       = previewCol,
+            Splitter1        = splitter1,
+            Splitter2        = splitter2,
+            HeaderNameLabel  = nameLabel,
+            HeaderNameEditor = nameEditor,
+            SourceLabel      = sourceLabel,
+            MdLabel          = mdLabel,
+            PreviewLabel     = previewLabel,
         };
 
         void BeginRename()
@@ -432,7 +446,7 @@ public partial class MainWindow : Window
         return tab;
     }
 
-    private static Grid WrapInPanel(UIElement content, string label, int column)
+    private static (Grid Panel, TextBlock Label) WrapInPanel(UIElement content, string label, int column)
     {
         var g = new Grid();
         g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -453,7 +467,7 @@ public partial class MainWindow : Window
         g.Children.Add(lbl);
         g.Children.Add((UIElement)content);
         Grid.SetColumn(g, column);
-        return g;
+        return (g, lbl);
     }
 
     private TabItem MakeAddTabButton() => new()
