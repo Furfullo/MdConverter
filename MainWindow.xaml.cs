@@ -527,10 +527,13 @@ public partial class MainWindow : Window
         if (_dockedTab is null) return;
 
         // Move contentGrid back into the TabItem
-        if (CompareLeftPane.Child is Grid contentGrid)
+        if (CompareLeftPane.Child is DockPanel wrapper)
         {
+            var contentGrid = wrapper.Children.OfType<Grid>().FirstOrDefault();
+            wrapper.Children.Clear();
             CompareLeftPane.Child = null;
-            _dockedTab.Content    = contentGrid;
+            if (contentGrid is not null)
+                _dockedTab.Content = contentGrid;
         }
 
         // Remove pin prefix from header
@@ -554,8 +557,28 @@ public partial class MainWindow : Window
         // Move contentGrid from the TabItem into the left pane
         if (tab.Content is Grid contentGrid)
         {
-            tab.Content           = null;
-            CompareLeftPane.Child = contentGrid;
+            tab.Content = null;
+
+            var tabName = GetTabHeaderLabel(tab)?.Text?.Replace("📌 ", "") ?? "Tab";
+            var strip = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(0x6B, 0x46, 0xC1)),
+                Padding    = new Thickness(8, 3, 8, 3)
+            };
+            strip.Child = new TextBlock
+            {
+                Text       = $"◀  {tabName}",
+                Foreground = Brushes.White,
+                FontSize   = 10,
+                FontWeight = FontWeights.SemiBold
+            };
+
+            var wrapper = new DockPanel();
+            DockPanel.SetDock(strip, Dock.Top);
+            wrapper.Children.Add(strip);
+            wrapper.Children.Add(contentGrid);
+
+            CompareLeftPane.Child = wrapper;
         }
 
         // Add pin prefix to header
