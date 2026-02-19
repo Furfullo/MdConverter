@@ -786,7 +786,8 @@ public partial class MainWindow : Window
         if (GetActiveTabState() is not TabState state) return;
         if (!state.WebViewReady) return;
         if (TogglePreview.IsChecked != true) return;
-        state.PreviewWebView.CoreWebView2.NavigateToString(MarkdownRenderer.ToHtml(state.OutputBox.Text));
+        state.PreviewWebView.CoreWebView2.NavigateToString(
+            MarkdownRenderer.ToHtml(state.OutputBox.Text, ThemeManager.Current == "dark"));
     }
 
     // -------------------------------------------------------------------------
