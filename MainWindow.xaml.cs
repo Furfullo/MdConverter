@@ -472,6 +472,10 @@ public partial class MainWindow : Window
         int docCount = DocumentTabs.Items.Cast<TabItem>().Count(t => t != _addTabItem);
         if (docCount <= 1) return; // always keep at least one
 
+        // Undock first if this tab is pinned to the left pane
+        if (tab == _dockedTab)
+            UndockTab();
+
         int  index       = DocumentTabs.Items.IndexOf(tab);
         bool wasSelected = DocumentTabs.SelectedItem == tab;
 
