@@ -214,10 +214,37 @@
             </DockPanel>
         </Border>
 
-        <!-- ── Document tabs (content built in code-behind) ── -->
-        <TabControl x:Name="DocumentTabs" Grid.Row="1"
-                    Style="{StaticResource DocTabControl}"
-                    SelectionChanged="DocumentTabs_SelectionChanged"/>
+        <!-- ── Comparison layout (Row 1) ── -->
+        <Grid x:Name="CompareGrid" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0" MinWidth="0"/>
+                <ColumnDefinition Width="0"/>
+                <ColumnDefinition Width="0"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left (docked) pane — hidden until comparison mode activates -->
+            <Border x:Name="CompareLeftPane"
+                    Grid.Column="0"
+                    ClipToBounds="True"
+                    BorderBrush="#D0D0D0"
+                    BorderThickness="0,0,0,1"/>
+
+            <!-- Drag handle between panes -->
+            <GridSplitter x:Name="CompareSplitter"
+                          Grid.Column="1"
+                          Grid.ColumnSpan="2"
+                          Width="5"
+                          HorizontalAlignment="Stretch"
+                          Background="#DDDDDD"
+                          Cursor="SizeWE"
+                          Visibility="Collapsed"/>
+
+            <!-- Right pane: existing tab control (always visible) -->
+            <TabControl x:Name="DocumentTabs" Grid.Column="3"
+                        Style="{StaticResource DocTabControl}"
+                        SelectionChanged="DocumentTabs_SelectionChanged"/>
+        </Grid>
 
         <!-- ── Status bar ── -->
         <Border Grid.Row="2" Margin="0"
