@@ -591,6 +591,21 @@ public partial class MainWindow : Window
             return;
         }
 
+        // Skip the docked tab — it belongs to the left pane, not the right
+        if (DocumentTabs.SelectedItem is TabItem selected && selected == _dockedTab)
+        {
+            var next = DocumentTabs.Items
+                .OfType<TabItem>()
+                .FirstOrDefault(t => t != _dockedTab && t != _addTabItem);
+            if (next is not null)
+            {
+                _suppressTabChange = true;
+                DocumentTabs.SelectedItem = next;
+                _suppressTabChange = false;
+            }
+            return;
+        }
+
         if (GetActiveTabState() is TabState state)
         {
             ApplyPanelVisibilityToTab(state);
