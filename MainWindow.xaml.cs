@@ -41,6 +41,12 @@ public partial class MainWindow : Window
     private bool     _suppressTabChange  = false;
     private bool     _suppressOutputSync = false;
     private TabItem? _addTabItem;
+    private TabItem? _dockedTab;
+
+    // Comparison-grid column accessors (indices match CompareGrid.ColumnDefinitions order)
+    private ColumnDefinition LeftPaneCol    => CompareGrid.ColumnDefinitions[0];
+    private ColumnDefinition SplitterLeft  => CompareGrid.ColumnDefinitions[1];
+    private ColumnDefinition SplitterRight => CompareGrid.ColumnDefinitions[2];
 
     public MainWindow()
     {
