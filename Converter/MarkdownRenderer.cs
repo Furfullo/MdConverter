@@ -29,7 +29,7 @@ public static class MarkdownRenderer
         string h1Border  = isDark ? "#45475a" : "#e0e0e0";
         string h2Border  = isDark ? "#45475a" : "#e8e8e8";
         string codeBg    = isDark ? "#313244" : "#f3f3f3";
-        string preBg     = isDark ? "#11111b" : "#1e1e1e";
+        string preBg     = isDark ? "#11111b" : "#1e1e1e"; // dark code block bg in both themes (GitHub-style)
         string preFg     = isDark ? "#cdd6f4" : "#d4d4d4";
         string bqBg      = isDark ? "#1e2030" : "#f0f7ff";
         string bqBorder  = isDark ? "#89b4fa" : "#0078d4";

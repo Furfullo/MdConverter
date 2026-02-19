@@ -771,6 +771,7 @@ public partial class MainWindow : Window
         try
         {
             await state.PreviewWebView.EnsureCoreWebView2Async();
+            state.PreviewWebView.CoreWebView2.Settings.IsScriptEnabled = false;
             state.WebViewReady = true;
         }
         catch
