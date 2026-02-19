@@ -471,6 +471,72 @@ public partial class MainWindow : Window
     }
 
     // -------------------------------------------------------------------------
+    // Dock / undock helpers
+    // -------------------------------------------------------------------------
+
+    private static TextBlock? GetTabHeaderLabel(TabItem tab) =>
+        (tab.Header as StackPanel)?.Children.OfType<TextBlock>().FirstOrDefault();
+
+    private void UndockTab()
+    {
+        if (_dockedTab is null) return;
+
+        // Move contentGrid back into the TabItem
+        if (CompareLeftPane.Child is Grid contentGrid)
+        {
+            CompareLeftPane.Child = null;
+            _dockedTab.Content    = contentGrid;
+        }
+
+        // Remove pin prefix from header
+        if (GetTabHeaderLabel(_dockedTab) is TextBlock lbl && lbl.Text.StartsWith("📌 "))
+            lbl.Text = lbl.Text[3..];
+
+        // Hide left pane and splitter
+        LeftPaneCol.Width    = new GridLength(0);
+        SplitterLeft.Width   = new GridLength(0);
+        SplitterRight.Width  = new GridLength(0);
+        CompareSplitter.Visibility = Visibility.Collapsed;
+
+        _dockedTab = null;
+    }
+
+    private void DockTab(TabItem tab)
+    {
+        // Undock any previously docked tab first
+        UndockTab();
+
+        // Move contentGrid from the TabItem into the left pane
+        if (tab.Content is Grid contentGrid)
+        {
+            tab.Content           = null;
+            CompareLeftPane.Child = contentGrid;
+        }
+
+        // Add pin prefix to header
+        if (GetTabHeaderLabel(tab) is TextBlock lbl && !lbl.Text.StartsWith("📌 "))
+            lbl.Text = "📌 " + lbl.Text;
+
+        // Show left pane and splitter (equal split initially)
+        LeftPaneCol.Width    = new GridLength(1, GridUnitType.Star);
+        SplitterLeft.Width   = new GridLength(3);
+        SplitterRight.Width  = new GridLength(3);
+        CompareSplitter.Visibility = Visibility.Visible;
+
+        _dockedTab = tab;
+
+        // If the docked tab was selected in the right pane, move to another tab
+        if (DocumentTabs.SelectedItem == tab)
+        {
+            var next = DocumentTabs.Items
+                .OfType<TabItem>()
+                .FirstOrDefault(t => t != tab && t != _addTabItem);
+            if (next is not null)
+                DocumentTabs.SelectedItem = next;
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Tab switching
     // -------------------------------------------------------------------------
 
