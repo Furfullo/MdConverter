@@ -26,6 +26,10 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // Pin a consistent AppUserModelID so the taskbar button appears regardless
+        // of whether the app is launched from the exe directly or via a shortcut.
+        SetCurrentProcessExplicitAppUserModelID("MdConverter.App");
+
         base.OnStartup(e);
 
         DispatcherUnhandledException += (_, ex) =>
@@ -267,6 +271,8 @@ public partial class App : Application
         return p;
     }
 
-    [DllImport("user32.dll")] private static extern bool DestroyIcon(IntPtr hIcon);
-    [DllImport("gdi32.dll")]  private static extern bool DeleteObject(IntPtr hObject);
+    [DllImport("user32.dll")]   private static extern bool DestroyIcon(IntPtr hIcon);
+    [DllImport("gdi32.dll")]    private static extern bool DeleteObject(IntPtr hObject);
+    [DllImport("shell32.dll")]  private static extern void SetCurrentProcessExplicitAppUserModelID(
+                                    [MarshalAs(UnmanagedType.LPWStr)] string appId);
 }

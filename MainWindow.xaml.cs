@@ -70,12 +70,6 @@ public partial class MainWindow : Window
         Hide();
     }
 
-    protected override void OnStateChanged(EventArgs e)
-    {
-        if (WindowState == WindowState.Minimized) Hide();
-        base.OnStateChanged(e);
-    }
-
     // -------------------------------------------------------------------------
     // Loaded — initialise tabs (WebView2 init is now lazy per-tab)
     // -------------------------------------------------------------------------
@@ -771,10 +765,16 @@ public partial class MainWindow : Window
 
     private async Task EnsureWebViewReadyAsync(TabState state)
     {
+        // Read DPI before await — VisualTreeHelper.GetDpi throws when WebView2's VisualTarget is in the tree
+        var src = PresentationSource.FromVisual(this);
+        double dpiScale = src?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+
         try
         {
             await state.PreviewWebView.EnsureCoreWebView2Async();
             state.PreviewWebView.CoreWebView2.Settings.IsScriptEnabled = false;
+            // WebView2 in WPF doesn't auto-scale with per-monitor DPI; apply it manually
+            state.PreviewWebView.ZoomFactor = dpiScale;
             state.WebViewReady = true;
         }
         catch
